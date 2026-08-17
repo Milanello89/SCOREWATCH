@@ -1,0 +1,353 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D41A52DADD0CCF0A0871B543 /* ScoreWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BEC200258FD664E520D4EE /* ScoreWatchApp.swift */; };
+		FC17E32E9B6417A115F79D01 /* MatchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4912326AA630F674A78E75F6 /* MatchModels.swift */; };
+		2CFE3716C5705326DD860414 /* MatchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A36A044AFF48AB9B6ABA5B /* MatchEngine.swift */; };
+		1D52EE14E99507B6785097FA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3119D3F46D6448B46F6E97 /* ContentView.swift */; };
+		32DA4E6C9511E1E40EC653CA /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F428CB9C5EC30C3F3703F99 /* SetupView.swift */; };
+		DB4486D766503A9F7DB16825 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08223B92D9548DC33079E20 /* MatchView.swift */; };
+		A9CFB349054B17A941824B20 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802E0BDF20AC0DB85137C43E /* SummaryView.swift */; };
+		DF5EC31C1B592CECBF9C41D8 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C303ED0D91CDCFA77A2BC62 /* HistoryView.swift */; };
+		ABACEA6AEF18FE1C67C3088F /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53BFA756DCB9012A716E810 /* WorkoutManager.swift */; };
+		9952DCDACC456AED383B0E0C /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B9487AE00D7625A74A431C /* Haptics.swift */; };
+		35E7F96496C6DD4EE01DAE54 /* MatchStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC60DC9359A605675A4D6393 /* MatchStore.swift */; };
+		EE471D652B6A15940F6C4A8F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC4A6CAC76DAAF8BF6C42990 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		593F5BD5E6E9D8793485256D /* ScoreWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScoreWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6BEC200258FD664E520D4EE /* ScoreWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreWatchApp.swift; sourceTree = "<group>"; };
+		4912326AA630F674A78E75F6 /* MatchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchModels.swift; sourceTree = "<group>"; };
+		A2A36A044AFF48AB9B6ABA5B /* MatchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchEngine.swift; sourceTree = "<group>"; };
+		5B3119D3F46D6448B46F6E97 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		6F428CB9C5EC30C3F3703F99 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		D08223B92D9548DC33079E20 /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
+		802E0BDF20AC0DB85137C43E /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
+		9C303ED0D91CDCFA77A2BC62 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		B53BFA756DCB9012A716E810 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
+		D0B9487AE00D7625A74A431C /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		EC60DC9359A605675A4D6393 /* MatchStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchStore.swift; sourceTree = "<group>"; };
+		BC4A6CAC76DAAF8BF6C42990 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EF147C2F017D21BEA58AFF8D /* ScoreWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScoreWatch.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FE7006A0F8A8753331FC7CCD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AB48CFA305015276AB5620D4 = {
+			isa = PBXGroup;
+			children = (
+				C8A1E76B6CA46DDC89E29CCD /* ScoreWatch Watch App */,
+				692092DE1C1C8624E142B71D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C8A1E76B6CA46DDC89E29CCD /* ScoreWatch Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				B6BEC200258FD664E520D4EE /* ScoreWatchApp.swift */,
+				2D4F9A2B56CC44478A7177C5 /* Models */,
+				ED55EC5F9F35C70E73DCE895 /* Views */,
+				F55F2AF17E558133A1465AA1 /* Services */,
+				BC4A6CAC76DAAF8BF6C42990 /* Assets.xcassets */,
+				EF147C2F017D21BEA58AFF8D /* ScoreWatch.entitlements */,
+			);
+			path = "ScoreWatch Watch App";
+			sourceTree = "<group>";
+		};
+		2D4F9A2B56CC44478A7177C5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4912326AA630F674A78E75F6 /* MatchModels.swift */,
+				A2A36A044AFF48AB9B6ABA5B /* MatchEngine.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		ED55EC5F9F35C70E73DCE895 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5B3119D3F46D6448B46F6E97 /* ContentView.swift */,
+				6F428CB9C5EC30C3F3703F99 /* SetupView.swift */,
+				D08223B92D9548DC33079E20 /* MatchView.swift */,
+				802E0BDF20AC0DB85137C43E /* SummaryView.swift */,
+				9C303ED0D91CDCFA77A2BC62 /* HistoryView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F55F2AF17E558133A1465AA1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B53BFA756DCB9012A716E810 /* WorkoutManager.swift */,
+				D0B9487AE00D7625A74A431C /* Haptics.swift */,
+				EC60DC9359A605675A4D6393 /* MatchStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		692092DE1C1C8624E142B71D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				593F5BD5E6E9D8793485256D /* ScoreWatch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E8A3AD980EC179856012B7E /* ScoreWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D8A97B166D8FFF780E30A2D /* Build configuration list */;
+			buildPhases = (
+				9E199EDCB17B4C967EDEA5CE /* Sources */,
+				FE7006A0F8A8753331FC7CCD /* Frameworks */,
+				AB2660E5E1235C14F8623B10 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScoreWatch;
+			productName = ScoreWatch;
+			productReference = 593F5BD5E6E9D8793485256D /* ScoreWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		98F54143AB4E86B28C3AFEE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					0E8A3AD980EC179856012B7E = {
+						CreatedOnToolsVersion = 15.2;
+					};
+				};
+			};
+			buildConfigurationList = 5A380CF0A451933EE9FF813C /* Build configuration list */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AB48CFA305015276AB5620D4;
+			productRefGroup = 692092DE1C1C8624E142B71D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E8A3AD980EC179856012B7E /* ScoreWatch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AB2660E5E1235C14F8623B10 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE471D652B6A15940F6C4A8F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9E199EDCB17B4C967EDEA5CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D41A52DADD0CCF0A0871B543 /* ScoreWatchApp.swift in Sources */,
+				FC17E32E9B6417A115F79D01 /* MatchModels.swift in Sources */,
+				2CFE3716C5705326DD860414 /* MatchEngine.swift in Sources */,
+				1D52EE14E99507B6785097FA /* ContentView.swift in Sources */,
+				32DA4E6C9511E1E40EC653CA /* SetupView.swift in Sources */,
+				DB4486D766503A9F7DB16825 /* MatchView.swift in Sources */,
+				A9CFB349054B17A941824B20 /* SummaryView.swift in Sources */,
+				DF5EC31C1B592CECBF9C41D8 /* HistoryView.swift in Sources */,
+				ABACEA6AEF18FE1C67C3088F /* WorkoutManager.swift in Sources */,
+				9952DCDACC456AED383B0E0C /* Haptics.swift in Sources */,
+				35E7F96496C6DD4EE01DAE54 /* MatchStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E8A664B426DCB939B812EAF0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = watchos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		EE021C88C2F80797F2C6EAC5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = watchos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		1E0D549F0915174FF8BD83EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "ScoreWatch Watch App/ScoreWatch.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ScoreWatch;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Aplikacija zapiše dvoboj med vadbe in med igro spremlja srčni utrip, da lahko rezultat ves čas ostane na zaslonu.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Aplikacija shrani odigrani dvoboj kot vadbo, da se prikaže v aplikaciji Fitness.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = si.inoxcenter.scorewatch.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		9DDA0FC41D82F4AB4C32F490 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "ScoreWatch Watch App/ScoreWatch.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ScoreWatch;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Aplikacija zapiše dvoboj med vadbe in med igro spremlja srčni utrip, da lahko rezultat ves čas ostane na zaslonu.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Aplikacija shrani odigrani dvoboj kot vadbo, da se prikaže v aplikaciji Fitness.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = si.inoxcenter.scorewatch.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5A380CF0A451933EE9FF813C /* Build configuration list for PBXProject */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8A664B426DCB939B812EAF0 /* Debug */,
+				EE021C88C2F80797F2C6EAC5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8A97B166D8FFF780E30A2D /* Build configuration list for PBXNativeTarget */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E0D549F0915174FF8BD83EB /* Debug */,
+				9DDA0FC41D82F4AB4C32F490 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+}

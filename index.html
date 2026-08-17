@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rezultat">
+<meta name="theme-color" content="#0b0d0f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Rezultat – tenis in badminton</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0d0f;
+    --me: #34d17b;
+    --opp: #ff9f43;
+    --text: #f2f4f6;
+    --muted: #8a929a;
+    --line: #1e2328;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* ---------- glava ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    min-height: 52px;
+    border-bottom: 1px solid var(--line);
+  }
+  #setSummary {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-variant-numeric: tabular-nums;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #clock {
+    font-size: 14px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .iconbtn {
+    background: #171b1f;
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    width: 40px; height: 34px;
+    font-size: 17px;
+    display: grid; place-items: center;
+    cursor: pointer;
+  }
+  .iconbtn:active { background: #23292f; }
+  .iconbtn:disabled { opacity: .35; }
+
+  /* ---------- igralni coni ---------- */
+  main { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 4px; position: relative; }
+
+  .zone {
+    flex: 1;
+    position: relative;
+    border-radius: 18px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    overflow: hidden;
+    transition: background-color .12s ease;
+    cursor: pointer;
+  }
+  .zone.me  { background: color-mix(in srgb, var(--me) 16%, transparent); }
+  .zone.opp { background: color-mix(in srgb, var(--opp) 16%, transparent); }
+  .zone.me.flash  { background: color-mix(in srgb, var(--me) 45%, transparent); }
+  .zone.opp.flash { background: color-mix(in srgb, var(--opp) 45%, transparent); }
+
+  .zlabel {
+    padding-left: 18px;
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: 12px; font-weight: 800; letter-spacing: 1.4px;
+  }
+  .zone.me  .zlabel { color: var(--me); }
+  .zone.opp .zlabel { color: var(--opp); }
+
+  .serve {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: currentColor;
+    opacity: 0;
+  }
+  .serve.on { opacity: 1; }
+
+  .pts {
+    font-size: clamp(64px, 20vh, 150px);
+    font-weight: 800;
+    line-height: .95;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -3px;
+    text-align: center;
+  }
+
+  .sets {
+    padding-right: 18px;
+    text-align: right;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .sets b { display: block; font-size: 26px; color: var(--text); font-weight: 800; }
+
+  /* ---------- plavajoče oznake ---------- */
+  #badge {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,.82);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px; font-weight: 700;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .18s ease;
+  }
+  #badge.on { opacity: 1; }
+
+  #toast {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%) scale(.85);
+    background: #2f7bff;
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-size: 15px; font-weight: 800;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s ease, transform .15s ease;
+    z-index: 5;
+  }
+  #toast.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  /* ---------- prekrivni zasloni ---------- */
+  .sheet {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 20;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: max(24px, env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+    display: none;
+  }
+  .sheet.on { display: block; }
+
+  h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: -.5px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; line-height: 1.45; }
+
+  .field { margin-bottom: 20px; }
+  .field > label {
+    display: block; font-size: 12px; font-weight: 800;
+    letter-spacing: 1.2px; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 9px;
+  }
+
+  .seg { display: flex; gap: 8px; flex-wrap: wrap; }
+  .seg button {
+    flex: 1 1 0; min-width: 88px;
+    background: #14181c;
+    border: 1.5px solid var(--line);
+    color: var(--text);
+    border-radius: 13px;
+    padding: 13px 10px;
+    font-size: 15px; font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] {
+    border-color: var(--me);
+    background: color-mix(in srgb, var(--me) 18%, #14181c);
+    color: #fff;
+  }
+  .seg button:active { transform: scale(.98); }
+
+  .primary {
+    width: 100%;
+    background: var(--me);
+    color: #06130c;
+    border: none;
+    border-radius: 15px;
+    padding: 18px;
+    font-size: 18px; font-weight: 800; letter-spacing: .6px;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .primary:active { filter: brightness(.92); }
+
+  .ghost {
+    width: 100%;
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--line);
+    border-radius: 13px;
+    padding: 15px;
+    font-size: 15px; font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .ghost.danger { color: #ff6b6b; border-color: #3a2226; }
+
+  .hint {
+    background: #12161a;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 14px 16px;
+    font-size: 13px; line-height: 1.6; color: var(--muted);
+    margin-top: 18px;
+  }
+  .hint b { color: var(--text); }
+
+  /* ---------- povzetek ---------- */
+  .result-big { font-size: 40px; font-weight: 800; margin: 10px 0 2px; }
+  .result-score { font-size: 22px; color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stats { margin-top: 24px; }
+  .stat { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .stat span:first-child { color: var(--muted); }
+  .stat span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .hrow { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .hrow .l { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .hrow .s { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; margin-right: 11px; flex: 0 0 auto; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div id="setSummary">Tenis</div>
+    <div id="clock">0:00</div>
+    <button class="iconbtn" id="btnUndo" title="Razveljavi">↺</button>
+    <button class="iconbtn" id="btnMenu" title="Možnosti">☰</button>
+  </header>
+
+  <main>
+    <div class="zone me" id="zoneMe">
+      <div class="zlabel">JAZ<span class="serve" id="serveMe"></span></div>
+      <div class="pts" id="ptsMe">0</div>
+      <div class="sets">seti<b id="setsMe">0</b></div>
+    </div>
+
+    <div class="zone opp" id="zoneOpp">
+      <div class="zlabel">NASPROTNIK<span class="serve" id="serveOpp"></span></div>
+      <div class="pts" id="ptsOpp">0</div>
+      <div class="sets">seti<b id="setsOpp">0</b></div>
+    </div>
+
+    <div id="badge"></div>
+    <div id="toast">Razveljavljeno</div>
+  </main>
+</div>
+
+<!-- ------------------ NASTAVITVE ------------------ -->
+<section class="sheet on" id="sheetSetup">
+  <h1>Nov dvoboj</h1>
+  <p class="sub">Klik zgoraj = točka zame · klik spodaj = točka za nasprotnika · dolg pritisk = razveljavi</p>
+
+  <div class="field">
+    <label>Šport</label>
+    <div class="seg" id="segSport">
+      <button data-v="tennis" aria-pressed="true">Tenis</button>
+      <button data-v="badminton" aria-pressed="false">Badminton</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Način štetja</label>
+    <div class="seg" id="segMode">
+      <button data-v="official" aria-pressed="true">Uradna pravila</button>
+      <button data-v="free" aria-pressed="false">Prosto štetje</button>
+    </div>
+  </div>
+
+  <div class="field" id="fieldSets">
+    <label>Format</label>
+    <div class="seg" id="segSets">
+      <button data-v="1" aria-pressed="false">1 set</button>
+      <button data-v="3" aria-pressed="true">Na 2 dobljena</button>
+      <button data-v="5" aria-pressed="false" id="btnSets5">Na 3 dobljene</button>
+    </div>
+  </div>
+
+  <div class="field" id="fieldTennisOpts">
+    <label>Tenis – dodatno</label>
+    <div class="seg" id="segNoAd">
+      <button data-v="0" aria-pressed="true">S prednostjo</button>
+      <button data-v="1" aria-pressed="false">Brez prednosti</button>
+    </div>
+    <div class="seg" id="segMTB" style="margin-top:8px">
+      <button data-v="0" aria-pressed="true">Odločilni set normalno</button>
+      <button data-v="1" aria-pressed="false">Odločilni set do 10</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Prvi servis</label>
+    <div class="seg" id="segServer">
+      <button data-v="0" aria-pressed="true">Jaz</button>
+      <button data-v="1" aria-pressed="false">Nasprotnik</button>
+    </div>
+  </div>
+
+  <button class="primary" id="btnStart">ZAČNI DVOBOJ</button>
+  <button class="ghost" id="btnHistory">Zgodovina dvobojev</button>
+
+  <div class="hint">
+    <b>Nasvet:</b> odpri v Safariju → gumb za deljenje → <b>Dodaj na začetni zaslon</b>.
+    Aplikacija se bo zagnala čez cel zaslon, brez naslovne vrstice.
+    Med dvobojem zaslon ostane prižgan.
+    <div id="offlineStatus" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+      Preverjam shranjevanje za uporabo brez povezave …
+    </div>
+  </div>
+</section>
+
+<!-- ------------------ MOŽNOSTI MED IGRO ------------------ -->
+<section class="sheet" id="sheetMenu">
+  <h1>Možnosti</h1>
+  <p class="sub">Dvoboj še vedno teče.</p>
+  <button class="ghost" id="btnResume">Nazaj na dvoboj</button>
+  <button class="ghost" id="btnUndo2">Razveljavi zadnjo točko</button>
+  <button class="ghost danger" id="btnFinish">Zaključi in shrani</button>
+  <button class="ghost danger" id="btnAbandon">Prekini brez shranjevanja</button>
+</section>
+
+<!-- ------------------ POVZETEK ------------------ -->
+<section class="sheet" id="sheetSummary">
+  <h1 id="sumTitle">Konec</h1>
+  <div class="result-big" id="sumResult">Zmaga</div>
+  <div class="result-score" id="sumScore">6:4 6:3</div>
+  <div class="stats" id="sumStats"></div>
+  <button class="primary" id="btnNew" style="margin-top:24px">NOV DVOBOJ</button>
+  <button class="ghost" id="btnCopy">Kopiraj rezultat</button>
+</section>
+
+<!-- ------------------ ZGODOVINA ------------------ -->
+<section class="sheet" id="sheetHistory">
+  <h1>Zgodovina</h1>
+  <p class="sub" id="histSummary"></p>
+  <div id="histList"></div>
+  <button class="ghost" id="btnHistBack" style="margin-top:20px">Nazaj</button>
+  <button class="ghost danger" id="btnHistClear">Počisti zgodovino</button>
+</section>
+
+<script>
+"use strict";
+
+/* =======================================================================
+   1. LOGIKA ŠTETJA
+   Enaka logika kot v datoteki MatchEngine.swift za Apple Watch.
+   ======================================================================= */
+
+const ME = 0, OPP = 1;
+const other = p => (p === ME ? OPP : ME);
+const clone = s => ({ ...s, completedSets: s.completedSets.map(x => ({ ...x })) });
+const setsNeeded = st => Math.floor(st.setsToPlay / 2) + 1;
+
+function newState(settings) {
+  const s = {
+    pointsMe: 0, pointsOpponent: 0,
+    gamesMe: 0, gamesOpponent: 0,
+    setsMe: 0, setsOpponent: 0,
+    completedSets: [],
+    inTiebreak: false, isMatchTiebreak: false,
+    tiebreakFirstServer: settings.firstServer,
+    server: settings.firstServer,
+    isFinished: false, winner: null, totalPoints: 0,
+  };
+  if (settings.sport === 'tennis' && settings.mode === 'official' &&
+      settings.matchTiebreak && settings.setsToPlay === 1) {
+    s.inTiebreak = true; s.isMatchTiebreak = true;
+  }
+  return s;
+}
+
+class Engine {
+  constructor(settings) {
+    this.settings = settings;
+    this.state = newState(settings);
+    this.history = [];
+    this.startTime = Date.now();
+    this.endTime = null;
+  }
+
+  get canUndo() { return this.history.length > 0; }
+
+  award(player) {
+    if (this.state.isFinished) return 'ignored';
+    this.history.push(clone(this.state));
+    if (this.history.length > 500) this.history.shift();
+
+    const s = clone(this.state);
+    s.totalPoints += 1;
+    this._addPoint(player, s);
+
+    let event = 'point';
+    if (this.settings.mode === 'free') {
+      s.server = player;
+    } else if (this.settings.sport === 'badminton') {
+      s.server = player;
+      event = this._resolveBadminton(s);
+    } else {
+      event = this._resolveTennisPoint(s);
+    }
+
+    this.state = s;
+    if (s.isFinished && this.endTime === null) this.endTime = Date.now();
+    return event;
+  }
+
+  undo() {
+    if (!this.history.length) return false;
+    this.state = this.history.pop();
+    this.endTime = null;
+    return true;
+  }
+
+  _addPoint(p, s) { if (p === ME) s.pointsMe += 1; else s.pointsOpponent += 1; }
+
+  /* Badminton: do 21 točk, potrebna razlika 2, absolutna meja 30 */
+  _resolveBadminton(s) {
+    const a = s.pointsMe, b = s.pointsOpponent;
+    const leader = a > b ? ME : OPP;
+    const hi = Math.max(a, b), diff = Math.abs(a - b);
+    if (!((hi >= 21 && diff >= 2) || hi >= 30)) return 'point';
+
+    s.completedSets.push({ me: a, opponent: b });
+    if (leader === ME) s.setsMe += 1; else s.setsOpponent += 1;
+    s.pointsMe = 0; s.pointsOpponent = 0;
+
+    if (s.setsMe >= setsNeeded(this.settings) || s.setsOpponent >= setsNeeded(this.settings)) {
+      s.isFinished = true; s.winner = leader;
+      return 'matchWon';
+    }
+    s.server = leader;
+    return 'setWon';
+  }
+
+  _resolveTennisPoint(s) {
+    if (s.inTiebreak) return this._resolveTiebreak(s);
+    const a = s.pointsMe, b = s.pointsOpponent;
+    const leader = a > b ? ME : OPP;
+    const hi = Math.max(a, b), diff = Math.abs(a - b);
+    const gameWon = this.settings.noAd ? (hi >= 4 && diff >= 1) : (hi >= 4 && diff >= 2);
+    if (!gameWon) return 'point';
+
+    s.pointsMe = 0; s.pointsOpponent = 0;
+    if (leader === ME) s.gamesMe += 1; else s.gamesOpponent += 1;
+    s.server = other(s.server);
+    return this._resolveTennisSet(s, leader);
+  }
+
+  _resolveTiebreak(s) {
+    const target = s.isMatchTiebreak ? 10 : 7;
+    const a = s.pointsMe, b = s.pointsOpponent;
+    const leader = a > b ? ME : OPP;
+    const hi = Math.max(a, b), diff = Math.abs(a - b);
+
+    /* prvo točko servira izbrani igralec, nato menjava na vsaki dve točki */
+    const shifts = Math.floor((a + b + 1) / 2);
+    s.server = (shifts % 2 === 0) ? s.tiebreakFirstServer : other(s.tiebreakFirstServer);
+
+    if (!(hi >= target && diff >= 2)) return 'point';
+
+    if (s.isMatchTiebreak) {
+      s.completedSets.push({ me: a, opponent: b });
+      if (leader === ME) s.setsMe += 1; else s.setsOpponent += 1;
+      s.pointsMe = 0; s.pointsOpponent = 0;
+      s.inTiebreak = false; s.isFinished = true; s.winner = leader;
+      return 'matchWon';
+    }
+
+    if (leader === ME) s.gamesMe += 1; else s.gamesOpponent += 1;
+    const set = { me: s.gamesMe, opponent: s.gamesOpponent, tbMe: a, tbOpp: b };
+    s.pointsMe = 0; s.pointsOpponent = 0; s.inTiebreak = false;
+    return this._closeSet(s, set, leader);
+  }
+
+  _resolveTennisSet(s, gameWinner) {
+    const g1 = s.gamesMe, g2 = s.gamesOpponent;
+    if (Math.max(g1, g2) >= 6 && Math.abs(g1 - g2) >= 2) {
+      return this._closeSet(s, { me: g1, opponent: g2 }, gameWinner);
+    }
+    if (g1 === 6 && g2 === 6) {
+      s.inTiebreak = true; s.isMatchTiebreak = false;
+      s.tiebreakFirstServer = s.server;
+    }
+    return 'gameWon';
+  }
+
+  _closeSet(s, set, winner) {
+    s.completedSets.push(set);
+    if (winner === ME) s.setsMe += 1; else s.setsOpponent += 1;
+    s.gamesMe = 0; s.gamesOpponent = 0;
+
+    const need = setsNeeded(this.settings);
+    if (s.setsMe >= need || s.setsOpponent >= need) {
+      s.isFinished = true; s.winner = winner;
+      return 'matchWon';
+    }
+    if (this.settings.matchTiebreak && s.setsMe === need - 1 && s.setsOpponent === need - 1) {
+      s.inTiebreak = true; s.isMatchTiebreak = true;
+      s.tiebreakFirstServer = s.server;
+    }
+    return 'setWon';
+  }
+
+  displayPoints(player) {
+    const a = this.state.pointsMe, b = this.state.pointsOpponent;
+    const mine = player === ME ? a : b;
+    const theirs = player === ME ? b : a;
+
+    if (this.settings.mode !== 'official' || this.settings.sport !== 'tennis' || this.state.inTiebreak) {
+      return String(mine);
+    }
+    if (mine >= 3 && theirs >= 3) {
+      if (mine === theirs) return '40';
+      if (mine > theirs) return this.settings.noAd ? '40' : 'AD';
+      return '40';
+    }
+    return ['0', '15', '30', '40'][Math.min(mine, 3)];
+  }
+
+  get setSummary() {
+    const parts = this.state.completedSets.map(x => `${x.me}:${x.opponent}`);
+    if (this.settings.mode === 'official' && this.settings.sport === 'tennis' && !this.state.isFinished) {
+      parts.push(`${this.state.gamesMe}:${this.state.gamesOpponent}`);
+    }
+    return parts.join('  ');
+  }
+
+  get finalScoreLine() {
+    return this.state.completedSets.map(x => `${x.me}:${x.opponent}`).join('  ');
+  }
+
+  situationLabel() {
+    if (this.settings.mode !== 'official' || this.state.isFinished) return null;
+    if (this.state.inTiebreak) {
+      return this.state.isMatchTiebreak ? 'Podaljšana igra do 10' : 'Podaljšana igra';
+    }
+    if (this.settings.sport === 'tennis' &&
+        this.state.pointsMe >= 3 && this.state.pointsOpponent >= 3 &&
+        this.state.pointsMe === this.state.pointsOpponent) {
+      return this.settings.noAd ? 'Odločilna točka' : 'Neodločeno';
+    }
+    for (const p of [ME, OPP]) {
+      const probe = clone(this.state);
+      this._addPoint(p, probe);
+      const ev = this.settings.sport === 'badminton'
+        ? this._resolveBadminton(probe)
+        : this._resolveTennisPoint(probe);
+      if (ev === 'matchWon') return p === ME ? 'Žogica za dvoboj' : 'Nasprotnik: žogica za dvoboj';
+      if (ev === 'setWon')   return p === ME ? 'Žogica za set'   : 'Nasprotnik: žogica za set';
+    }
+    return null;
+  }
+}
+
+/* =======================================================================
+   2. ZVOČNA POVRATNA INFORMACIJA
+   iOS ne podpira vibriranja v brskalniku, zato uporabimo kratek ton.
+   ======================================================================= */
+
+let audioCtx = null;
+function beep(freq, ms, gain) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gain, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + ms / 1000);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + ms / 1000 + 0.02);
+  } catch (e) { /* zvok ni ključen */ }
+}
+
+function feedback(event) {
+  if (navigator.vibrate) {
+    const patterns = { point: 12, gameWon: [18, 50, 18], setWon: [25, 60, 25, 60, 25],
+                       matchWon: [40, 70, 40, 70, 90], undo: [10, 40, 10], ignored: 60 };
+    try { navigator.vibrate(patterns[event] || 12); } catch (e) {}
+  }
+  switch (event) {
+    case 'point':    beep(880, 55, 0.13); break;
+    case 'gameWon':  beep(1200, 130, 0.16); break;
+    case 'setWon':   beep(1400, 110, 0.17); setTimeout(() => beep(1700, 160, 0.17), 130); break;
+    case 'matchWon': [0, 160, 320].forEach((d, i) => setTimeout(() => beep(1200 + i * 260, 190, 0.18), d)); break;
+    case 'undo':     beep(420, 110, 0.14); break;
+    case 'ignored':  beep(200, 150, 0.12); break;
+  }
+}
+
+/* =======================================================================
+   3. SHRAMBA (z varnostno rezervo, če localStorage ni na voljo)
+   ======================================================================= */
+
+const Store = (() => {
+  const KEY = 'rezultat.matches.v1';
+  let memory = [];
+  let usable = true;
+  try {
+    window.localStorage.setItem('__t', '1');
+    window.localStorage.removeItem('__t');
+  } catch (e) { usable = false; }
+
+  function read() {
+    if (!usable) return memory;
+    try { return JSON.parse(window.localStorage.getItem(KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+  function write(list) {
+    memory = list;
+    if (!usable) return;
+    try { window.localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
+  }
+  return {
+    all: read,
+    add(rec) { const l = read(); l.unshift(rec); write(l.slice(0, 50)); },
+    clear() { write([]); },
+  };
+})();
+
+/* =======================================================================
+   4. VMESNIK
+   ======================================================================= */
+
+const $ = id => document.getElementById(id);
+
+const settings = {
+  sport: 'tennis', mode: 'official', setsToPlay: 3,
+  noAd: false, matchTiebreak: false, firstServer: ME,
+};
+
+let engine = null;
+let clockTimer = null;
+let wakeLock = null;
+
+/* --- izbirni gumbi --- */
+function segment(containerId, onPick) {
+  const box = $(containerId);
+  box.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn || btn.disabled) return;
+    [...box.querySelectorAll('button')].forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    onPick(btn.dataset.v);
+    beep(700, 35, 0.06);
+  });
+}
+
+segment('segSport', v => { settings.sport = v; refreshSetupOptions(); });
+segment('segMode',  v => { settings.mode = v; refreshSetupOptions(); });
+segment('segSets',  v => { settings.setsToPlay = parseInt(v, 10); });
+segment('segNoAd',  v => { settings.noAd = v === '1'; });
+segment('segMTB',   v => { settings.matchTiebreak = v === '1'; });
+segment('segServer', v => { settings.firstServer = parseInt(v, 10); });
+
+function refreshSetupOptions() {
+  const official = settings.mode === 'official';
+  $('fieldSets').style.display = official ? '' : 'none';
+  $('fieldTennisOpts').style.display = (official && settings.sport === 'tennis') ? '' : 'none';
+
+  /* Badminton se igra največ na 2 dobljena seta */
+  const b5 = $('btnSets5');
+  b5.disabled = settings.sport === 'badminton';
+  b5.style.opacity = b5.disabled ? '.35' : '1';
+  if (b5.disabled && settings.setsToPlay === 5) {
+    settings.setsToPlay = 3;
+    [...$('segSets').querySelectorAll('button')]
+      .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === '3')));
+  }
+}
+refreshSetupOptions();
+
+/* --- zasloni --- */
+function show(id) {
+  ['sheetSetup', 'sheetMenu', 'sheetSummary', 'sheetHistory']
+    .forEach(s => $(s).classList.toggle('on', s === id));
+}
+function hideAll() { show(null); }
+
+/* --- zaslon naj ostane prižgan --- */
+async function acquireWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch (e) { /* ni podprto – ni kritično */ }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && engine && !engine.state.isFinished) acquireWakeLock();
+});
+
+/* --- začetek dvoboja --- */
+$('btnStart').addEventListener('click', () => {
+  engine = new Engine({ ...settings });
+  hideAll();
+  acquireWakeLock();
+  render();
+  if (clockTimer) clearInterval(clockTimer);
+  clockTimer = setInterval(updateClock, 1000);
+  updateClock();
+  beep(900, 120, 0.15);
+});
+
+/* --- klik in dolg pritisk na igralni coni --- */
+function bindZone(elId, player) {
+  const el = $(elId);
+  let timer = null, fired = false;
+
+  const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+
+  el.addEventListener('pointerdown', e => {
+    if (!engine) return;
+    e.preventDefault();
+    fired = false;
+    timer = setTimeout(() => { fired = true; timer = null; doUndo(); }, 400);
+  });
+
+  el.addEventListener('pointerup', e => {
+    if (!engine) return;
+    e.preventDefault();
+    cancel();
+    if (!fired) award(player);
+    fired = false;
+  });
+
+  el.addEventListener('pointercancel', () => { cancel(); fired = false; });
+  el.addEventListener('pointerleave', () => { cancel(); fired = false; });
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+bindZone('zoneMe', ME);
+bindZone('zoneOpp', OPP);
+
+function award(player) {
+  const event = engine.award(player);
+  feedback(event);
+  flash(player === ME ? 'zoneMe' : 'zoneOpp');
+  render();
+  if (engine.state.isFinished) finishMatch();
+}
+
+function doUndo() {
+  if (!engine) return;
+  if (!engine.undo()) { feedback('ignored'); return; }
+  feedback('undo');
+  toast('Razveljavljeno');
+  render();
+}
+
+$('btnUndo').addEventListener('click', doUndo);
+$('btnUndo2').addEventListener('click', () => { doUndo(); hideAll(); });
+$('btnMenu').addEventListener('click', () => { if (engine) show('sheetMenu'); });
+$('btnResume').addEventListener('click', hideAll);
+
+function flash(id) {
+  const el = $(id);
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 130);
+}
+
+let toastTimer = null;
+function toast(text) {
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.add('on');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 750);
+}
+
+/* --- izris --- */
+function render() {
+  if (!engine) return;
+  const s = engine.state;
+  const official = engine.settings.mode === 'official';
+
+  $('ptsMe').textContent = engine.displayPoints(ME);
+  $('ptsOpp').textContent = engine.displayPoints(OPP);
+  $('setsMe').textContent = s.setsMe;
+  $('setsOpp').textContent = s.setsOpponent;
+
+  document.querySelectorAll('.sets').forEach(el => el.style.visibility = official ? 'visible' : 'hidden');
+
+  $('serveMe').classList.toggle('on', official && s.server === ME);
+  $('serveOpp').classList.toggle('on', official && s.server === OPP);
+
+  const summary = engine.setSummary;
+  $('setSummary').textContent = summary || (engine.settings.sport === 'tennis' ? 'Tenis' : 'Badminton');
+
+  const label = engine.situationLabel();
+  const badge = $('badge');
+  badge.textContent = label || '';
+  badge.classList.toggle('on', !!label);
+
+  $('btnUndo').disabled = !engine.canUndo;
+}
+
+function updateClock() {
+  if (!engine) return;
+  const end = engine.endTime || Date.now();
+  const total = Math.floor((end - engine.startTime) / 1000);
+  $('clock').textContent = `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
+/* --- konec dvoboja --- */
+function finishMatch() {
+  if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+  if (!engine.endTime) engine.endTime = Date.now();
+  if (wakeLock) { try { wakeLock.release(); } catch (e) {} wakeLock = null; }
+  updateClock();
+
+  const s = engine.state;
+  const scoreLine = engine.finalScoreLine || `${s.pointsMe}:${s.pointsOpponent}`;
+  const durationSec = Math.floor((engine.endTime - engine.startTime) / 1000);
+  const winnerIsMe = s.winner === ME;
+
+  Store.add({
+    date: new Date().toISOString(),
+    sport: engine.settings.sport,
+    scoreLine, winnerIsMe, durationSec,
+    totalPoints: s.totalPoints,
+  });
+
+  $('sumTitle').textContent = engine.settings.sport === 'tennis' ? 'Tenis' : 'Badminton';
+  $('sumResult').textContent = s.winner === null ? 'Konec' : (winnerIsMe ? '🏆 Zmaga' : 'Poraz');
+  $('sumScore').textContent = scoreLine;
+
+  const mins = Math.floor(durationSec / 60);
+  $('sumStats').innerHTML = [
+    ['Trajanje', mins >= 60 ? `${Math.floor(mins / 60)} h ${mins % 60} min` : `${mins} min`],
+    ['Odigrane točke', String(s.totalPoints)],
+    ['Seti', `${s.setsMe} : ${s.setsOpponent}`],
+    ['Točke na minuto', mins > 0 ? (s.totalPoints / mins).toFixed(1) : '–'],
+  ].map(([k, v]) => `<div class="stat"><span>${k}</span><span>${v}</span></div>`).join('');
+
+  show('sheetSummary');
+}
+
+$('btnFinish').addEventListener('click', () => { if (engine) { engine.state.isFinished = true; finishMatch(); } });
+$('btnAbandon').addEventListener('click', () => {
+  if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+  if (wakeLock) { try { wakeLock.release(); } catch (e) {} wakeLock = null; }
+  engine = null;
+  show('sheetSetup');
+});
+$('btnNew').addEventListener('click', () => { engine = null; show('sheetSetup'); });
+
+$('btnCopy').addEventListener('click', async () => {
+  const text = `${$('sumTitle').textContent}: ${$('sumScore').textContent} (${$('sumResult').textContent})`;
+  try { await navigator.clipboard.writeText(text); toastOnSheet('Kopirano'); }
+  catch (e) { toastOnSheet('Kopiranje ni uspelo'); }
+});
+function toastOnSheet(msg) {
+  const b = $('btnCopy'); const old = b.textContent;
+  b.textContent = msg; setTimeout(() => { b.textContent = old; }, 1200);
+}
+
+/* --- zgodovina --- */
+$('btnHistory').addEventListener('click', renderHistory);
+$('btnHistBack').addEventListener('click', () => show('sheetSetup'));
+$('btnHistClear').addEventListener('click', () => { Store.clear(); renderHistory(); });
+
+/* slovenska sklanjatev: 1 dvoboj, 2 dvoboja, 3–4 dvoboji, 5+ dvobojev */
+function sklon(n, ednina, dvojina, trojina, mnozina) {
+  const r = n % 100;
+  if (r === 1) return ednina;
+  if (r === 2) return dvojina;
+  if (r === 3 || r === 4) return trojina;
+  return mnozina;
+}
+
+function renderHistory() {
+  const list = Store.all();
+  const wins = list.filter(m => m.winnerIsMe).length;
+  $('histSummary').textContent = list.length
+    ? `${list.length} ${sklon(list.length, 'dvoboj', 'dvoboja', 'dvoboji', 'dvobojev')}` +
+      ` · ${wins} ${sklon(wins, 'zmaga', 'zmagi', 'zmage', 'zmag')}` +
+      ` · ${Math.round(wins / list.length * 100)} % uspešnost`
+    : 'Zaenkrat še ni shranjenih dvobojev.';
+
+  $('histList').innerHTML = list.map(m => {
+    const d = new Date(m.date);
+    const date = `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`;
+    const mins = Math.round(m.durationSec / 60);
+    const color = m.winnerIsMe ? 'var(--me)' : 'var(--opp)';
+    return `<div class="hrow">
+      <div style="display:flex;align-items:center">
+        <div class="dot" style="background:${color}"></div>
+        <div>
+          <div class="l">${m.scoreLine}</div>
+          <div class="s">${m.sport === 'tennis' ? 'Tenis' : 'Badminton'} · ${date} · ${mins} min</div>
+        </div>
+      </div>
+      <div style="color:${color};font-weight:800;font-size:13px">${m.winnerIsMe ? 'ZMAGA' : 'PORAZ'}</div>
+    </div>`;
+  }).join('');
+
+  show('sheetHistory');
+}
+
+/* prepreči povečavo z dvojnim dotikom */
+document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+
+/* =======================================================================
+   5. DELOVANJE BREZ POVEZAVE
+   Service worker ob prvem obisku shrani aplikacijo na napravo.
+   Deluje samo prek naslova https:// (npr. GitHub Pages), ne pa ob
+   neposrednem odpiranju datoteke z diska.
+   ======================================================================= */
+
+(function registerServiceWorker() {
+  const status = $('offlineStatus');
+
+  function say(text, ok) {
+    if (!status) return;
+    status.textContent = text;
+    status.style.color = ok ? 'var(--me)' : 'var(--muted)';
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    say('Brskalnik ne podpira shranjevanja za uporabo brez povezave.', false);
+    return;
+  }
+
+  if (location.protocol === 'file:') {
+    say('Za delovanje brez povezave odpri aplikacijo prek spletnega naslova, ne kot datoteko.', false);
+    return;
+  }
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => {
+        if (navigator.serviceWorker.controller) {
+          say('Shranjeno na napravo – deluje tudi brez povezave.', true);
+        } else {
+          say('Shranjujem na napravo …', false);
+          reg.addEventListener('updatefound', () => {
+            const sw = reg.installing;
+            if (!sw) return;
+            sw.addEventListener('statechange', () => {
+              if (sw.state === 'activated' || sw.state === 'installed') {
+                say('Shranjeno na napravo – deluje tudi brez povezave.', true);
+              }
+            });
+          });
+        }
+      })
+      .catch(() => say('Shranjevanje za uporabo brez povezave ni uspelo.', false));
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+name: Objavi na TestFlight
+
+# ------------------------------------------------------------------------
+# Ta potek zgradi PODPISANO aplikacijo in jo naloži na TestFlight,
+# od koder jo namestiš na uro prek aplikacije TestFlight na iPhonu.
+#
+# Zahteva plačan Apple Developer Program (99 USD/leto) in tri skrivnosti,
+# ki jih nastaviš v GitHubu pod Settings → Secrets and variables → Actions:
+#
+#   ASC_KEY_ID        – ID ključa App Store Connect API
+#   ASC_ISSUER_ID     – Issuer ID iz App Store Connect
+#   ASC_KEY_P8        – vsebina datoteke AuthKey_XXXX.p8 (celotno besedilo)
+#   APPLE_TEAM_ID     – ID ekipe (10 znakov, npr. AB12CD34EF)
+#
+# Ključ ustvariš v App Store Connect → Users and Access → Integrations →
+# App Store Connect API → gumb "+". Vloga naj bo "App Manager".
+#
+# OPOMBA: prvi zagon pogosto zahteva manjšo prilagoditev (npr. točen
+# identifikator paketa v App Store Connect). Sporočilo o napaki v dnevniku
+# GitHub Actions pove natančno, kaj manjka.
+# ------------------------------------------------------------------------
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: "Številka gradnje (mora biti večja od prejšnje)"
+        required: true
+        default: "1"
+
+jobs:
+  release:
+    name: Gradnja in objava
+    runs-on: macos-15
+
+    steps:
+      - name: Prevzemi kodo
+        uses: actions/checkout@v4
+
+      - name: Izberi najnovejši Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Pripravi ključ App Store Connect
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        run: |
+          mkdir -p ~/private_keys
+          echo "$ASC_KEY_P8" > ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          chmod 600 ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+
+      - name: Arhiviraj aplikacijo
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project ScoreWatch.xcodeproj \
+            -scheme ScoreWatch \
+            -configuration Release \
+            -destination 'generic/platform=watchOS' \
+            -archivePath build/ScoreWatch.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CURRENT_PROJECT_VERSION=${{ github.event.inputs.build_number }}
+
+      - name: Pripravi nastavitve izvoza
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cat > ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>uploadSymbols</key><true/>
+            <key>signingStyle</key><string>automatic</string>
+            <key>destination</key><string>upload</string>
+          </dict>
+          </plist>
+          PLIST
+
+      - name: Izvozi in naloži na TestFlight
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath build/ScoreWatch.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Počisti ključ
+        if: always()
+        run: rm -rf ~/private_keys
